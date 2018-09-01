@@ -119,9 +119,6 @@ ViewController.m //Implementation file
 //NSARRAY Referrencing and used a BUTTON and SWITCH
 ViewController.h //Header file
 @interface ViewController : UIViewController {
-
-
-
 }
 - - -
 ViewController.m //Implementation file
@@ -130,7 +127,7 @@ ViewController.m //Implementation file
 @implementation ViewController 
 - (void)viewDidLoad {
     [super viewDidLoad];
-   
+   NSArray *arraySample = @[@"Apple", @"Banana"];
 }
 @end
         
