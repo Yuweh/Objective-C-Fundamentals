@@ -1,0 +1,26 @@
+
+
+    func wifiInfoValidator(wifi: TWifi) {
+        
+        if (wifi.currentInfraConfig == nil) {
+            print("*** wifiInfoValidator FAIL")
+            self.showProgress(show: false)
+            self.pushToRetryViewController()
+            return
+        }
+        
+        let ifInfraMode = TWifi.checkIfInfrastructureMode(wifiMode: wifi.wifiMode)
+        let ifSameSSID = TWifi.checkIfSameInfrastructureSSID(ssid: wifi.currentInfraConfig!)
+        
+        if (ifInfraMode && ifSameSSID) {
+            print("*** wifiInfoValidator \(ifInfraMode) && \(ifSameSSID) - SUCCESS")
+            self.showProgress(show: false)
+            NavigationHelper.pushConnectingWifiConfig(navigationController: self.navigationController, retry: false)
+            return
+        } else {
+            print("*** wifiInfoValidator \(ifInfraMode) && \(ifSameSSID) - FAIL")
+            self.showProgress(show: false)
+            self.pushToRetryViewController()
+            return
+        }
+    }
