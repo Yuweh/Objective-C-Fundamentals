@@ -1,0 +1,96 @@
+extension ConnectingToTahomaViewController {
+    
+    func startWifiTimer() {
+        self.showProgress(show: true)
+        var executionNumber = 0
+        
+        if executionNumber <= 3 {
+            executionNumber += 1
+            print("*** wifiTimer executed @ \(executionNumber)th time")
+            if #available(iOS 10.0, *) {
+                timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
+                    if let wifi = TWifi.getWifi() {
+                        let ifInfraMode = TWifi.checkIfSameInfrastructureSSID(ssid: wifi.currentInfraConfig!)
+                        print("*** startWifiTimer()")
+                        self?.wifiSsidChecker(ifInfraMode)
+                    }  else {
+                        print("*** startWifiTimer() RETURN")
+                        return
+                    }
+                }
+            } else {
+                // Fallback on earlier versions
+                timerDispatchSourceTimer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.main)
+                timerDispatchSourceTimer?.scheduleRepeating(deadline: .now(), interval: .seconds(10))
+                timerDispatchSourceTimer?.setEventHandler{
+                    if let wifi = TWifi.getWifi() {
+                        let ifInfraMode = TWifi.checkIfSameInfrastructureSSID(ssid: wifi.currentInfraConfig!)
+                        print("*** istartWifiTimer() Fallback on earlier versions")
+                        self.wifiSsidChecker(ifInfraMode)
+                    }  else {
+                        return
+                    }
+                }
+                timerDispatchSourceTimer?.resume()
+            }
+            
+        } else {
+            print(" wifiTimer stopped")
+            stopWifiTimer()
+        }
+    }
+    
+    func stopWifiTimer() {
+        print("*** stopWifiTimer")
+        self.showProgress(show: false)
+        timer?.invalidate()
+        timerDispatchSourceTimer?.cancel()
+    }
+    
+    func wifiSsidChecker(_ setToInfra: Bool) {
+        if (setToInfra) {
+            getWifiInfo()
+            self.stopWifiTimer()
+            print("*** setToInfra? \(setToInfra) SUCCESS")
+            return
+        }
+        print("*** setToInfra? \(setToInfra)")
+        return
+    }
+
+    
+    func getWifiInfo() {
+        if let wifi = TWifi.getWifi() {
+                self.wifiInfoValidator(wifi: wifi)
+            print("*** getWifiInfo")
+        }  else {
+            self.pushToRetryViewController()
+            return
+        }
+    }
+    
+    func wifiInfoValidator(wifi: TWifi) {
+        
+        guard let wifiSsidState = wifi.currentInfraConfig else {
+            print("*** wifiInfoValidator FAIL")
+            self.showProgress(show: false)
+            self.pushToRetryViewController()
+            return
+        }
+        
+        let ifSameSSID = TWifi.checkIfSameInfrastructureSSID(ssid: wifiSsidState)
+        
+        if (ifSameSSID) {
+            print("*** wifiInfoValidator \(ifSameSSID) - SUCCESS")
+            self.showProgress(show: false)
+            NavigationHelper.pushConnectingWifiConfig(navigationController: self.navigationController, retry: false)
+            return
+        } else {
+            print("*** wifiInfoValidator \(ifSameSSID) - FAIL")
+            self.showProgress(show: false)
+            self.pushToRetryViewController()
+            return
+        }
+    }
+    
+}
