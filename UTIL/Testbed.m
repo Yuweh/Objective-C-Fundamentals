@@ -1,5 +1,7 @@
 import Foundation
 
+//set in SWIFT
+ 
 @objc(TWifi) public class TWifi: CWifi {
     
     static func currentWifiMode() -> String {
@@ -27,3 +29,14 @@ import Foundation
         Wifi.commandForSetTargetInfraConfig(withSSID: ssid, password: passphrase)
     }
 }
+
+
+- - - - - - 
+//with Objective-C
+        NSLog(@"*** devicesInPlace: now placeToUse == nil");
+
+    if (placeToUse == nil) {
+        NSLog(@"*** devicesInPlace: now placeToUse == nil");
+        return [TDeviceManager getInstance].getAllDevices;
+    }
+
