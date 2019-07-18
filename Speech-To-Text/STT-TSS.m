@@ -76,4 +76,11 @@
     [self.speechRequest appendAudioSampleBuffer:sampleBuffer];
 }
 // some Recognition Delegate
+
+- (void)speechRecognitionTask:(SFSpeechRecognitionTask *)task didFinishRecognition:(SFSpeechRecognitionResult *)result {
+    NSLog(@"speechRecognitionTask:(SFSpeechRecognitionTask *)task didFinishRecognition");
+    NSString * translatedString = [[[result bestTranscription] formattedString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSLog(@"Says : %@", translatedString);
+}
+
 @end
